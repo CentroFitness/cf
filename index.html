@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore di Schede di Allenamento</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #111;
+            color: #eee;
+            padding: 20px;
+            max-width: 1000px;
+            margin: auto;
+        }
+        input, select, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 400px;
+            background: #222;
+            color: #eee;
+            border: 1px solid #555;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #555;
+        }
+        th {
+            background-color: #222;
+        }
+        td {
+            background-color: #333;
+        }
+        #scheda {
+            margin-top: 30px;
+        }
+        .social {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div style="text-align:center; margin-bottom: 20px;">
+    <h1 style="color:#ff0000; font-size: 2.5em; font-weight: bold; text-shadow: 2px 2px 4px #000;">A.S.D CentroFitness</h1>
+</div>
+
+    <h1>Generatore Scheda Allenamento - 6 Settimane</h1>
+    
+    <label>Nome e Cognome:</label>
+    <input type="text" id="nome" placeholder="Es. Mario Rossi">
+
+    <label>Peso (kg):</label>
+    <input type="number" id="peso">
+    <label>Altezza (cm):</label>
+    <input type="number" id="altezza">
+    <label>Età:</label>
+    
+    <label>Genere:</label>
+    <select id="genere">
+        <option value="uomo">Uomo</option>
+        <option value="donna">Donna</option>
+    </select>
+
+    <input type="number" id="eta" min="10" max="100">
+    <label>Tipo di fisico:</label>
+    <select id="fisico">
+        <option value="ectomorfo">Ectomorfo</option>
+        <option value="mesomorfo">Mesomorfo</option>
+        <option value="endomorfo">Endomorfo</option>
+    </select>
+    
+    <label>Tipologia di scheda:</label>
+
+    <label>Giorni di allenamento a settimana:</label>
+    <select id="giorni">
+        <option value="3">3 giorni</option>
+        <option value="4">4 giorni</option>
+        <option value="5">5 giorni</option>
+        <option value="6" selected>6 giorni</option>
+    </select>
+
+    <select id="tipologia">
+        <option value="classica">Scheda di allenamento classica</option>
+        <option value="totalbody">Scheda di allenamento total body</option>
+        <option value="over60">Scheda di allenamento over 60</option>
+        <option value="gambe">Scheda di allenamento solo gambe</option>
+        <option value="cardio">Scheda di allenamento solo cardio</option>
+    </select>
+
+    <label>Obiettivo:</label>
+    <select id="obiettivo">
+        <option value="massa">Aumento Massa</option>
+        <option value="definizione">Definizione</option>
+        <option value="forza">Forza</option>
+        <option value="dimagrimento">Dimagrimento</option>
+        <option value="cardio">Cardio</option>
+    </select>
+    <button onclick="generaScheda()">Genera Scheda</button>
+    <button onclick="scaricaPDF()">Scarica in PDF</button>
+
+    <h2 style="color:#ddd;margin-top:30px;">Riscaldamento Consigliato</h2>
+    <ul style="color:#ccc;">
+        <li>5-10 minuti di cyclette o camminata veloce</li>
+        <li>3 serie da 15 ripetizioni di squat a corpo libero</li>
+        <li>2 serie da 20 jumping jack</li>
+        <li>Rotazioni articolari (spalle, anche, polsi, caviglie) per 30 secondi ciascuna</li>
+    </ul>
+    <div id="scheda"></div>
+    <h2 style="color:#ddd;margin-top:30px;">Stretching Consigliato (Post-Allenamento)</h2>
+    <ul style="color:#ccc;">
+        <li>Stretching pettorali: 30 secondi per lato</li>
+        <li>Stretching quadricipiti: 30 secondi per gamba</li>
+        <li>Stretching bicipiti femorali: 30 secondi per gamba</li>
+        <li>Stretching schiena e spalle: 30 secondi</li>
+        <li>Respirazione profonda: 1-2 minuti</li>
+    </ul>
+
+    <div class="social">
+        <h3>Contatti</h3>
+        <p><strong>Francesco</strong>: <a href="https://www.instagram.com/francesco_oretti" style="color:#ccc;">Instagram</a> | WhatsApp: <a href="https://wa.me/393204152543" style="color:#ccc;">3204152543</a></p>
+        <p><strong>Federico</strong>: <a href="https://www.instagram.com/federico_iacomelli" style="color:#ccc;">Instagram</a> | WhatsApp: <a href="https://wa.me/393895175911" style="color:#ccc;">3895175911</a></p>
+    </div>
+
+    <script>
+        const esercizi = {
+            petto: ["Panca piana con bilanciere", "Croci su panca inclinata con manubri", "Panca declinata con bilanciere", "Chest press", "Push up", "Croci ai cavi alti", "Croci ai cavi bassi", "Croci con manubri su panca piana", "Spinte con manubri su panca inclinata", "Spinte con manubri su panca piana" ],
+            schiena: ["Lat machine", "Rematore con bilanciere", "Pulley basso", "Trazioni alla sbarra", "Pullover", "Low row", "Lat machine presa inversa", "Lat machine Presa neutra", "Triangolo alla lat machine", "Pulley presa larga" ],
+            gambe: ["Squat", "Leg press", "Affondi", "Stacchi da terra", "Leg extension", "Adductor machine", "Abductor machine", "Stacchi rumeni", "Hiptrust", "Gluteos machine", "Calf seduto", "Calf in piedi", "Hack squat"],
+            spalle: ["Lento avanti", "Alzate laterali", "Alzate frontali", "Shoulder press", "Alzate a 90°", "Face pull", "Spinte Frontali su panca a 90", "Arnold Press", "Alzate oblique al cavo"],
+            braccia: ["Curl con bilanciere", "Curl alternato con manubri", "French press", "Push down", "Hammer curl", "Bicipite machine", "Push down con corda", "Spider curl su panca a 30/45" ],
+            core: ["Crunch", "Plank", "Russian twist", "Sit-up", "Leg raise"]
+        };
+
+        const suggerimenti = {
+"Panca piana con bilanciere": "Controlla il movimento nella fase negativa.",
+            "Croci su panca inclinata con manubri": "Concentrati sull'allungamento muscolare.",
+            "Panca declinata con bilanciere": "Ottimo per la parte bassa del petto.",
+            "Chest press": "Evita di bloccare i gomiti in alto.",
+            "Push up": "Mantieni il corpo in linea.",
+            "Lat machine": "Tira con i gomiti, non con le mani.",
+            "Rematore con bilanciere": "Schiena sempre dritta.",
+            "Pulley basso": "Evita lo slancio, concentrati sul movimento.",
+            "Trazioni alla sbarra": "Mantieni il controllo in discesa.",
+            "Pullover": "Respira profondamente durante l'allungamento.",
+            "Squat": "Scendi almeno al parallelo.",
+            "Leg press": "Non stendere mai completamente le gambe.",
+            "Affondi": "Tieni il busto eretto.",
+            "Stacchi da terra": "Usa una forma corretta per evitare infortuni.",
+            "Leg extension": "Controlla il movimento e non usare troppo peso.",
+            "Lento avanti": "Esegui l’esercizio lentamente.",
+            "Alzate laterali": "Usa pesi moderati per controllare il movimento.",
+            "Alzate frontali": "Non sollevare oltre le spalle.",
+            "Shoulder press": "Mantieni la schiena dritta.",
+            "Alzate a 90°": "Movimento lento e controllato.",
+            "Curl con bilanciere": "Evita di dondolare il corpo.",
+            "Curl alternato con manubri": "Concentrati sulla contrazione.",
+            "French press": "Stai attento alla posizione dei gomiti.",
+            "Push down": "Non alzare troppo i gomiti.",
+            "Hammer curl": "Controlla la fase di discesa.",
+            "Crunch": "Non forzare il collo.",
+            "Plank": "Tieni il corpo allineato.",
+            "Russian twist": "Non usare troppo slancio.",
+            "Sit-up": "Mantieni i piedi a terra.",
+            "Leg raise": "Evita di inarcare la schiena.",
+    "Croci ai cavi alti": "Mantieni i gomiti leggermente flessi e stabili; evita un'eccessiva elevazione per prevenire stress alla spalla.",
+    "Croci ai cavi bassi": "Esegui un movimento diagonale dal basso verso l'alto per stimolare il fascio clavicolare del pettorale.",
+    "Croci con manubri su panca piana": "Mantieni i gomiti leggermente flessi e fermi; evita di portare i manubri troppo in alto per mantenere la tensione muscolare.",
+    "Spinte con manubri su panca inclinata": "Controlla il movimento, evitando di estendere completamente i gomiti per proteggere le articolazioni.",
+    "Spinte con manubri su panca piana": "Assicurati che i polsi siano allineati con i gomiti e controlla la discesa per massimizzare l'efficacia.",
+    "Low row": "Mantieni la schiena dritta e tira con i gomiti, non con le mani, per coinvolgere al meglio i dorsali.",
+    "Lat machine presa inversa": "Utilizza una presa supina per enfatizzare il lavoro sui bicipiti e sui dorsali inferiori.",
+    "Lat machine presa neutra": "Concentrati sul movimento dei gomiti verso il basso per attivare efficacemente i dorsali.",
+    "Triangolo alla lat machine": "Mantieni il busto leggermente inclinato all'indietro e tira il triangolo verso la parte superiore del petto.",
+    "Pulley presa larga": "Evita di oscillare il corpo; mantieni il movimento controllato per isolare i muscoli della schiena.",
+    "Adductor machine": "Esegui il movimento lentamente, concentrandoti sulla contrazione dei muscoli adduttori.",
+    "Abductor machine": "Mantieni la schiena appoggiata allo schienale e controlla sia la fase di apertura che di chiusura.",
+    "Stacchi rumeni": "Mantieni le gambe leggermente flesse e la schiena dritta per evitare infortuni e massimizzare il lavoro sui femorali.",
+    "Hiptrust": "Spingi attraverso i talloni e contrai i glutei al picco del movimento per massimizzare l'attivazione muscolare.",
+    "Gluteos machine": "Controlla il movimento, evitando slanci, per isolare efficacemente i glutei.",
+    "Calf seduto": "Esegui il movimento lentamente, concentrandoti sulla contrazione del polpaccio nella parte superiore.",
+    "Calf in piedi": "Mantieni le ginocchia leggermente flesse e solleva i talloni controllando sia la salita che la discesa.",
+    "Hack squat": "Mantieni la schiena appoggiata allo schienale e le ginocchia allineate con i piedi durante l'intero movimento.",
+    "Alzate oblique al cavo": "Esegui il movimento lentamente, mantenendo il braccio leggermente flesso per isolare i deltoidi.",
+    "Bicipite machine": "Assicurati che i gomiti rimangano fermi e concentrati sulla contrazione del bicipite durante l'esercizio.",
+    "Push down con corda": "Mantieni i gomiti vicini al corpo e spingi la corda verso il basso fino a completa estensione delle braccia.",
+    "Spider curl su panca a 30/45": "Mantieni il petto appoggiato alla panca e controlla il movimento per massimizzare l'isolamento del bicipite."
+};
+
+        function generaScheda() {
+            const obiettivo = document.getElementById('obiettivo').value;
+            const eta = parseInt(document.getElementById("eta").value);
+            
+    const tipologia = document.getElementById('tipologia').value;
+    const gruppi = Object.keys(esercizi);
+    let gruppiSelezionati;
+
+    if (tipologia === "classica") {
+        gruppiSelezionati = gruppi;
+    } else if (tipologia === "totalbody") {
+        gruppiSelezionati = ["petto", "schiena", "gambe", "spalle", "braccia", "core"];
+    } else if (tipologia === "over60") {
+        gruppiSelezionati = ["gambe", "spalle", "core"];
+    } else if (tipologia === "gambe") {
+        gruppiSelezionati = ["gambe"];
+    } else if (tipologia === "cardio") {
+        document.getElementById("scheda").innerHTML = "<h2>Programma Cardio</h2><ul><li>20 min camminata veloce</li><li>10 min salti con la corda</li><li>20 min cyclette</li><li>Stretching finale</li></ul>";
+        return;
+    } else {
+        gruppiSelezionati = gruppi;
+    }
+    
+            let nomeUtente = document.getElementById("nome").value;
+    let output = `<h2 style="color:#0f0;">Scheda di allenamento per ${nomeUtente}</h2>`;
+
+            
+        
+        
+        for (let settimana = 1; settimana <= 6; settimana++) {
+            output += `<h2>Settimana ${settimana}</h2>`;
+            if (eta >= 50 || tipologia === "over60") {
+                output += `<p style="color:yellow;">* Scheda adattata per età superiore ai 50 anni</p>`;
+            }
+
+            const tuttiGruppi = Object.keys(esercizi);
+            const gruppiMescolati = [...tuttiGruppi].sort(() => 0.5 - Math.random());
+
+            const gruppiTotalBody = [];
+            for (let i = 0; i < giorni; i++) {
+                gruppiTotalBody[i] = gruppiMescolati.slice(i * 3, i * 3 + 3);
+                if (gruppiTotalBody[i].length < 3) {
+                    const mancanti = 3 - gruppiTotalBody[i].length;
+                    gruppiTotalBody[i] = gruppiTotalBody[i].concat(tuttiGruppi.slice(0, mancanti));
+                }
+            }
+
+            for (let i = 0; i < giorni; i++) {
+                let eserciziGiorno = [];
+
+                if (tipologia === "totalbody") {
+                    let gruppo = gruppiTotalBody[i].join(" / ");
+                    let nomeGruppo = gruppo.split(" / ").map(g => g.charAt(0).toUpperCase() + g.slice(1)).join(" / ");
+                    eserciziGiorno = gruppiTotalBody[i].flatMap(gr => esercizi[gr]).sort(() => 0.5 - Math.random()).slice(0, 6);
+                    output += `<h4>Giorno ${i + 1} - ${nomeGruppo}</h4>`;
+                } else {
+                    let gruppo = gruppiPerSettimana[i].join(" / ");
+                    let nomeGruppo = gruppo.split(" / ").map(g => g.charAt(0).toUpperCase() + g.slice(1)).join(" / ");
+                    eserciziGiorno = gruppiPerSettimana[i].flatMap(gr => esercizi[gr]).sort(() => 0.5 - Math.random()).slice(0, 4 + Math.floor(Math.random() * 3));
+                    output += `<h4>Giorno ${i + 1} - ${nomeGruppo}</h4>`;
+                }
+
+                output += `<table><tr><th>Esercizio</th><th>Serie</th><th>Ripetizioni</th><th>Intensità</th><th>Recupero</th><th>Suggerimento</th></tr>`;
+                for (let j = 0; j < eserciziGiorno.length; j++) {
+                    let es = eserciziGiorno[j];
+                    let rip = obiettivo === "massa" ? "8-10" : obiettivo === "definizione" ? "12-15" : "5-7";
+                    let serie = obiettivo === "massa" ? "3-4" : obiettivo === "definizione" ? "3" : "4-5";
+
+                    let intensita, recupero;
+                    if (eta >= 50 || tipologia === "over60") {
+                        intensita = obiettivo === "massa" ? "60-70%" : obiettivo === "definizione" ? "50-60%" : "70-80%";
+                        recupero = obiettivo === "massa" ? "90-120 sec" : obiettivo === "definizione" ? "60-90 sec" : "120-150 sec";
+                    } else {
+                        intensita = obiettivo === "massa" ? "75-85%" : obiettivo === "definizione" ? "60-70%" : "85-95%";
+                        recupero = obiettivo === "massa" ? "60-90 sec" : obiettivo === "definizione" ? "30-60 sec" : "90-120 sec";
+                    }
+
+                    let tip = suggerimenti[es] || "";
+                    output += `<tr><td>${es}</td><td>${serie}</td><td>${rip}</td><td>${intensita}</td><td>${recupero}</td><td style='color:#ccc;font-size:0.9em;'>${tip}</td></tr>`;
+                }
+                output += "</table>";
+            }
+        }
+        document.getElementById("scheda").innerHTML = output;
+
+
+        }
+
+        function scaricaPDF() {
+            const element = document.getElementById("scheda");
+            html2pdf().from(element).save("scheda_allenamento.pdf");
+        }
+    </script>
+
+
+<script>
+function generaScheda() {
+    const obiettivo = document.getElementById('obiettivo').value;
+    const eta = parseInt(document.getElementById("eta").value);
+    const tipologia = document.getElementById('tipologia').value;
+    const giorni = parseInt(document.getElementById("giorni").value);
+    const gruppi = Object.keys(esercizi);
+    let gruppiSelezionati;
+
+    if (tipologia === "classica") {
+        gruppiSelezionati = [...gruppi];
+    } else if (tipologia === "totalbody") {
+        gruppiSelezionati = [...gruppi];
+    } else if (tipologia === "over60") {
+        gruppiSelezionati = ["gambe", "spalle", "core"];
+    } else if (tipologia === "gambe") {
+        gruppiSelezionati = ["gambe"];
+    } else if (tipologia === "cardio") {
+        document.getElementById("scheda").innerHTML = "<h2>Programma Cardio</h2><ul><li>20 min camminata veloce</li><li>10 min salti con la corda</li><li>20 min cyclette</li><li>Stretching finale</li></ul>";
+        return;
+    } else {
+        gruppiSelezionati = [...gruppi];
+    }
+
+    // Distribuzione dei gruppi muscolari per giorno
+    const gruppiPerSettimana = [];
+    if (tipologia === "totalbody") {
+        // Ogni giorno 3 gruppi muscolari diversi
+        const shuffled = [...gruppiSelezionati].sort(() => 0.5 - Math.random());
+        for (let i = 0; i < giorni; i++) {
+            let start = (i * 3) % gruppiSelezionati.length;
+            let gruppoGiorno = gruppiSelezionati.slice(start, start + 3);
+            if (gruppoGiorno.length < 3) {
+                gruppoGiorno = gruppoGiorno.concat(gruppiSelezionati.slice(0, 3 - gruppoGiorno.length));
+            }
+            gruppiPerSettimana.push(gruppoGiorno);
+        }
+    } else {
+        // Ogni giorno un gruppo muscolare diverso (o solo gambe)
+        const shuffled = [...gruppiSelezionati].sort(() => 0.5 - Math.random());
+        for (let i = 0; i < giorni; i++) {
+            gruppiPerSettimana.push([shuffled[i % shuffled.length]]);
+        }
+    }
+
+    let nomeUtente = document.getElementById("nome").value;
+    let output = `<h2 style="color:#0f0;">Scheda di allenamento per ${nomeUtente}</h2>`;
+    for (let settimana = 1; settimana <= 6; settimana++) {
+        output += `<h2>Settimana ${settimana}</h2>`;
+        if (eta >= 50 || tipologia === "over60") {
+            output += `<p style="color:yellow;">* Scheda adattata per età superiore ai 50 anni o selezione 'Over 60'</p>`;
+        }
+
+        for (let i = 0; i < giorni; i++) {
+            let gruppo = gruppiPerSettimana[i].join(" / ");
+            let nomeGruppo = gruppo.split(" / ").map(g => g.charAt(0).toUpperCase() + g.slice(1)).join(" / ");
+            let eserciziGiorno = gruppiPerSettimana[i]
+                .flatMap(gr => esercizi[gr])
+                .sort(() => 0.5 - Math.random())
+                .slice(0, tipologia === "totalbody" ? 6 : 4 + Math.floor(Math.random() * 3));
+
+            output += `<h4>Giorno ${i + 1} - ${nomeGruppo}</h4>`;
+            output += `<table><tr><th>Esercizio</th><th>Serie</th><th>Ripetizioni</th><th>Intensità</th><th>Recupero</th><th>Suggerimento</th></tr>`;
+            for (let es of eserciziGiorno) {
+                let rip = obiettivo === "massa" ? "8-10" : obiettivo === "definizione" ? "12-15" : "5-7";
+                let serie = obiettivo === "massa" ? "3-4" : obiettivo === "definizione" ? "3" : "4-5";
+                let intensita, recupero;
+                if (eta >= 50 || tipologia === "over60") {
+                    intensita = obiettivo === "massa" ? "60-70%" : obiettivo === "definizione" ? "50-60%" : "70-80%";
+                    recupero = obiettivo === "massa" ? "90-120 sec" : obiettivo === "definizione" ? "60-90 sec" : "120-150 sec";
+                } else {
+                    intensita = obiettivo === "massa" ? "75-85%" : obiettivo === "definizione" ? "60-70%" : "85-95%";
+                    recupero = obiettivo === "massa" ? "60-90 sec" : obiettivo === "definizione" ? "30-60 sec" : "90-120 sec";
+                }
+                let tip = suggerimenti[es] || "";
+                output += `<tr><td>${es}</td><td>${serie}</td><td>${rip}</td><td>${intensita}</td><td>${recupero}</td><td style='color:#ccc;font-size:0.9em;'>${tip}</td></tr>`;
+            }
+            output += "</table>";
+        }
+    }
+
+    document.getElementById("scheda").innerHTML = output;
+}
+</script>
+
+
+</body>
+</html>
